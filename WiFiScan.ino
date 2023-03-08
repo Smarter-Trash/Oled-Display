@@ -13,14 +13,11 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 void intro(){
-  display.print("HELLO ");
-  display.clearDisplay();
   display.setTextSize(2);
-  display.setCursor(30,24);
+  display.setCursor(0,0);
   display.print("HELLO ");
   display.write(2);
   display.display();
-  Serial.print("bb");
   delay(2000);
   //display.clearDisplay();
 
@@ -99,23 +96,7 @@ void setup()
 }
 
 void loop() {
-  display.print("HELLO ");
-  display.clearDisplay();
-  display.setTextSize(2);
-  display.setCursor(30,24);
-  display.print("HELLO ");
-  display.write(2);
-  display.display();
-  Serial.print("bb");
-  delay(2000);
-  //display.clearDisplay();
-
-  display.setCursor(0,10);
-  display.print("Welcome to our trash bin ");
-  display.write(3);
-  display.display();
-  delay(2000);
-  /*intro();
+  intro();
   delay(1000);
-  Serial.print("aa");*/
+  Serial.print("aa");
 }
