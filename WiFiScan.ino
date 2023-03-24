@@ -190,10 +190,15 @@ void trash_status(){
 void trash_quantity(){
   display.setTextSize(1);
   display.setCursor(0,0);
-  display.print("I'm still hugry, give me more trash!");
+  if (Percent_Tsh.plastic + Percent_Tsh.metal >= 175){
+    display.print("I'm so full!!!");    
+  } else {
+    display.print("I'm still hugry, give me more trash!");
+  }
+  
   display.setCursor(32, 10);
-  display.drawRect(33, 20, 20, 40, WHITE);
-  display.drawRect(60, 20, 20, 40, WHITE);
+  display.drawRect(33, 20, 20, 40, WHITE); //Plastic
+  display.drawRect(60, 20, 20, 40, WHITE); //Metal
   if (Percent_Tsh.Plastic == 0){
     display.fillRect(33, 60, 0, 0, WHITE);
   }else if (Percent_Tsh.plastic > 0 && Percent_Tsh.plastic <= 10){
@@ -217,27 +222,27 @@ void trash_quantity(){
   }else if (Percent_Tsh.plastic > 90 && Percent_Tsh.plastic <= 100){
     display.fillRect(33, 20, 20, 40, WHITE);
   }
-  if (Percent_Tsh.Metal == 0){
+  if (Percent_Tsh.metal == 0){
     display.fillRect(33, 60, 0, 0, WHITE);
-  }else if (Percent_Tsh.Metal > 0 && Percent_Tsh.Metal <= 10){
+  }else if (Percent_Tsh.metal > 0 && Percent_Tsh.metal <= 10){
     display.fillRect(33, 56, 20, 4, WHITE);
-  }else if (Percent_Tsh.Metal > 10 && Percent_Tsh.Metal <= 20){
+  }else if (Percent_Tsh.metal > 10 && Percent_Tsh.metal <= 20){
     display.fillRect(33, 52, 20, 8, WHITE);
-  }else if (Percent_Tsh.Metal > 20 && Percent_Tsh.Metal <= 30){
+  }else if (Percent_Tsh.metal > 20 && Percent_Tsh.metal <= 30){
     display.fillRect(33, 48, 20, 12, WHITE);
-  }else if (Percent_Tsh.Metal > 30 && Percent_Tsh.Metal <= 40){
+  }else if (Percent_Tsh.metal > 30 && Percent_Tsh.metal <= 40){
     display.fillRect(33, 44, 20, 16, WHITE);
-  }else if (Percent_Tsh.Metal > 40 && Percent_Tsh.Metal <= 50){
+  }else if (Percent_Tsh.metal > 40 && Percent_Tsh.metal <= 50){
     display.fillRect(33, 40, 20, 20, WHITE);
-  }else if (Percent_Tsh.Metal > 50 && Percent_Tsh.Metal <= 60){
+  }else if (Percent_Tsh.metal > 50 && Percent_Tsh.metal <= 60){
     display.fillRect(33, 36, 20, 24, WHITE);
-  }else if (Percent_Tsh.Metal > 60 && Percent_Tsh.Metal <= 70){
+  }else if (Percent_Tsh.metal > 60 && Percent_Tsh.metal <= 70){
     display.fillRect(33, 32, 20, 28, WHITE);
-  }else if (Percent_Tsh.Metal > 70 && Percent_Tsh.Metal <= 80){
+  }else if (Percent_Tsh.metal > 70 && Percent_Tsh.metal <= 80){
     display.fillRect(33, 28, 20, 32, WHITE);
-  }else if (Percent_Tsh.Metal > 80 && Percent_Tsh.Metal <= 90){
+  }else if (Percent_Tsh.metal > 80 && Percent_Tsh.metal <= 90){
     display.fillRect(33, 24, 20, 36, WHITE);
-  }else if (Percent_Tsh.Metal > 90 && Percent_Tsh.Metal <= 100){
+  }else if (Percent_Tsh.metal > 90 && Percent_Tsh.metal <= 100){
     display.fillRect(33, 20, 20, 40, WHITE);
   }
   //Show quantity of Metal
@@ -245,13 +250,13 @@ void trash_quantity(){
   //display.print("25%");
   display.printf("%d %", Percent_Tsh.plastic);
   display.setCursor(0, 38);
-  display.print("Metal");
+  display.print("Plastic");
   //Show quantity of Plastic
   display.setCursor(85, 30);
   //display.print("60%");
   display.printf("%d %", Percent_Tsh.metal);
   display.setCursor(85, 38);
-  display.print("Plastic");
+  display.print("Metal");
   display.display();
   delay(2000);
   display.clearDisplay();
