@@ -86,47 +86,46 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   if (compareMac(mac, PatAddress)){
-    memcpy(&Tsh_Status, incomingData, sizeof(Tsh_Status));
-    memcpy(&Cost, incomingData, sizeof(Cost));
-    if (state == 1){
+    if (state == 1 || state == 2){
+      memcpy(&Tsh_Status, incomingData, sizeof(Tsh_Status));
       state = Tsh_Status.state;
-      Serial.print("x: ");
+      Serial.print("state from Pat: ");
       Serial.println(Tsh_Status.state);
       Serial.println(Tsh_Status.plastic);
       Serial.println(Tsh_Status.metal);
     }else if (state == 3){
-      state = Cost.state;
-      Serial.print("x: ");
-      Serial.println(Cost.state);
-      Serial.println(Cost.cost);
+      memcpy(&Cost, incomingData, sizeof(Cost));
+      if(Cost.state == 4){
+        state = Cost.state;
+        Serial.print("state from Pat: ");
+        Serial.println(Cost.state);
+        Serial.println(Cost.cost);
+      }
     }
   }else if (compareMac(mac, FaiAddress)){
     memcpy(&State, incomingData, sizeof(State));
     state = State.state;
-    Serial.print("x: ");
+    Serial.print("state from Fai: ");
     Serial.println(State.state);
   }else if (compareMac(mac, ViewAddress)){
     memcpy(&Percent_Tsh, incomingData, sizeof(Percent_Tsh));
-    Serial.println("sssssssssss");
     state = Percent_Tsh.state;
-    Serial.print("x: ");
+    Serial.print("state from View: ");
     Serial.println(Percent_Tsh.state);
+    Serial.println(Percent_Tsh.plastic);
+    Serial.println(Percent_Tsh.metal);
   }else if (compareMac(mac, NunAddress)){
     memcpy(&Debt, incomingData, sizeof(Debt));
     state = Debt.state;
-    Serial.print("x: ");
+    Serial.print("state from Nun: ");
     Serial.println(Debt.state);
     Serial.println(Debt.debt);
   }
-
   Serial.print("Bytes received: ");
   Serial.println(len);
-  
-  // Serial.print("y: ");
-  // Serial.println(myData.y);
-  // Serial.println();
 }
 
+//state 0
 void intro(){
   display.setTextSize(2);
   display.setCursor(28,24);
@@ -149,6 +148,7 @@ void intro(){
   display.clearDisplay();
 }
 
+//state 15
 void choose(){
   display.setTextSize(2);
   display.setCursor(25, 0);
@@ -172,6 +172,7 @@ void choose(){
   display.clearDisplay();
 }
 
+//state 1 & 2
 void trash_status(){
   display.setTextSize(1);
   display.setCursor(0,0);
@@ -187,81 +188,83 @@ void trash_status(){
   display.clearDisplay();
 }
 
+//state 0 && 16
 void trash_quantity(){
   display.setTextSize(1);
   display.setCursor(0,0);
-  if (Percent_Tsh.plastic + Percent_Tsh.metal >= 175){
-    display.print("I'm so full!!!");    
+  if (Percent_Tsh.plastic == 100 || Percent_Tsh.metal == 100){
+    display.print("I'm so full!!! \nstop give me more trash.");    
   } else {
     display.print("I'm still hugry, give me more trash!");
   }
   
-  display.setCursor(32, 10);
-  display.drawRect(33, 20, 20, 40, WHITE); //Plastic
-  display.drawRect(60, 20, 20, 40, WHITE); //Metal
-  if (Percent_Tsh.Plastic == 0){
-    display.fillRect(33, 60, 0, 0, WHITE);
+  display.setCursor(44, 10);
+  display.drawRect(45, 20, 20, 40, WHITE); //Plastic
+  display.drawRect(70, 20, 20, 40, WHITE); //Metal
+  if (Percent_Tsh.plastic == 0){
+    display.fillRect(45, 60, 0, 0, WHITE);
   }else if (Percent_Tsh.plastic > 0 && Percent_Tsh.plastic <= 10){
-    display.fillRect(33, 56, 20, 4, WHITE);
+    display.fillRect(45, 56, 20, 4, WHITE);
   }else if (Percent_Tsh.plastic > 10 && Percent_Tsh.plastic <= 20){
-    display.fillRect(33, 52, 20, 8, WHITE);
+    display.fillRect(45, 52, 20, 8, WHITE);
   }else if (Percent_Tsh.plastic > 20 && Percent_Tsh.plastic <= 30){
-    display.fillRect(33, 48, 20, 12, WHITE);
+    display.fillRect(45, 48, 20, 12, WHITE);
   }else if (Percent_Tsh.plastic > 30 && Percent_Tsh.plastic <= 40){
-    display.fillRect(33, 44, 20, 16, WHITE);
+    display.fillRect(45, 44, 20, 16, WHITE);
   }else if (Percent_Tsh.plastic > 40 && Percent_Tsh.plastic <= 50){
-    display.fillRect(33, 40, 20, 20, WHITE);
+    display.fillRect(45, 40, 20, 20, WHITE);
   }else if (Percent_Tsh.plastic > 50 && Percent_Tsh.plastic <= 60){
-    display.fillRect(33, 36, 20, 24, WHITE);
+    display.fillRect(45, 36, 20, 24, WHITE);
   }else if (Percent_Tsh.plastic > 60 && Percent_Tsh.plastic <= 70){
-    display.fillRect(33, 32, 20, 28, WHITE);
+    display.fillRect(45, 32, 20, 28, WHITE);
   }else if (Percent_Tsh.plastic > 70 && Percent_Tsh.plastic <= 80){
-    display.fillRect(33, 28, 20, 32, WHITE);
+    display.fillRect(45, 28, 20, 32, WHITE);
   }else if (Percent_Tsh.plastic > 80 && Percent_Tsh.plastic <= 90){
-    display.fillRect(33, 24, 20, 36, WHITE);
+    display.fillRect(45, 24, 20, 36, WHITE);
   }else if (Percent_Tsh.plastic > 90 && Percent_Tsh.plastic <= 100){
-    display.fillRect(33, 20, 20, 40, WHITE);
+    display.fillRect(45, 20, 20, 40, WHITE);
   }
   if (Percent_Tsh.metal == 0){
-    display.fillRect(33, 60, 0, 0, WHITE);
+    display.fillRect(70, 60, 0, 0, WHITE);
   }else if (Percent_Tsh.metal > 0 && Percent_Tsh.metal <= 10){
-    display.fillRect(33, 56, 20, 4, WHITE);
+    display.fillRect(70, 56, 20, 4, WHITE);
   }else if (Percent_Tsh.metal > 10 && Percent_Tsh.metal <= 20){
-    display.fillRect(33, 52, 20, 8, WHITE);
+    display.fillRect(70, 52, 20, 8, WHITE);
   }else if (Percent_Tsh.metal > 20 && Percent_Tsh.metal <= 30){
-    display.fillRect(33, 48, 20, 12, WHITE);
+    display.fillRect(70, 48, 20, 12, WHITE);
   }else if (Percent_Tsh.metal > 30 && Percent_Tsh.metal <= 40){
-    display.fillRect(33, 44, 20, 16, WHITE);
+    display.fillRect(70, 44, 20, 16, WHITE);
   }else if (Percent_Tsh.metal > 40 && Percent_Tsh.metal <= 50){
-    display.fillRect(33, 40, 20, 20, WHITE);
+    display.fillRect(70, 40, 20, 20, WHITE);
   }else if (Percent_Tsh.metal > 50 && Percent_Tsh.metal <= 60){
-    display.fillRect(33, 36, 20, 24, WHITE);
+    display.fillRect(70, 36, 20, 24, WHITE);
   }else if (Percent_Tsh.metal > 60 && Percent_Tsh.metal <= 70){
-    display.fillRect(33, 32, 20, 28, WHITE);
+    display.fillRect(70, 32, 20, 28, WHITE);
   }else if (Percent_Tsh.metal > 70 && Percent_Tsh.metal <= 80){
-    display.fillRect(33, 28, 20, 32, WHITE);
+    display.fillRect(70, 28, 20, 32, WHITE);
   }else if (Percent_Tsh.metal > 80 && Percent_Tsh.metal <= 90){
-    display.fillRect(33, 24, 20, 36, WHITE);
+    display.fillRect(70, 24, 20, 36, WHITE);
   }else if (Percent_Tsh.metal > 90 && Percent_Tsh.metal <= 100){
-    display.fillRect(33, 20, 20, 40, WHITE);
+    display.fillRect(70, 20, 20, 40, WHITE);
   }
-  //Show quantity of Metal
+  //Show quantity of Plastic
   display.setCursor(0, 30);
   //display.print("25%");
-  display.printf("%d %", Percent_Tsh.plastic);
-  display.setCursor(0, 38);
+  display.printf("%d \%", Percent_Tsh.plastic);
+  display.setCursor(0, 40);
   display.print("Plastic");
-  //Show quantity of Plastic
-  display.setCursor(85, 30);
+  //Show quantity of Metal
+  display.setCursor(95, 30);
   //display.print("60%");
-  display.printf("%d %", Percent_Tsh.metal);
-  display.setCursor(85, 38);
+  display.printf("%d \%", Percent_Tsh.metal);
+  display.setCursor(95, 40);
   display.print("Metal");
   display.display();
   delay(2000);
   display.clearDisplay();
 }
 
+//state 4
 void cost(){
   display.setTextSize(2);
   display.setCursor(10, 0);
@@ -281,12 +284,13 @@ void cost(){
   display.setCursor(8,16);
   display.print("reward for");
   display.setCursor(3,35);
-  display.printf("%d Baht!!", Debt.debt);
+  display.printf("%d Baht!!", Cost.cost);
   display.display();
   delay(3000);
   display.clearDisplay();
 }
 
+//state 7
 void claim(){
   display.setTextSize(2);
   display.setCursor(5,5);
@@ -300,6 +304,7 @@ void claim(){
   display.clearDisplay();
 }
 
+//state 9
 void not_enough_coin( ){
   display.setTextSize(2);
   display.setCursor(10,0);
@@ -310,10 +315,11 @@ void not_enough_coin( ){
   display.setCursor(0, 46);
   display.print("Please,come next time");               
   display.display();
-  delay(2000);
+  delay(5000);
   display.clearDisplay();
 }
 
+//state 8
 void show_claim_debt(){
   display.setTextSize(2);
   display.setCursor(5,15);
@@ -325,6 +331,7 @@ void show_claim_debt(){
   display.clearDisplay();
 }
 
+//state 5 & 10
 void show_debt(){
   display.setTextSize(2);
   display.setCursor(0,0);
@@ -334,10 +341,11 @@ void show_debt(){
   display.setCursor(30,40);
   display.print("later!");
   display.display();
-  delay(2000);
+  delay(5000);
   display.clearDisplay();
 }
 
+//state 6
 void collect_debt(){
   display.setTextSize(1);
   display.setCursor(10, 20);
@@ -360,8 +368,18 @@ void Thank_you(){
   display.setCursor(35, 50);
   display.write(3);
   display.display();
+  delay(5000);
+  display.clearDisplay();
+}
+
+//state 0
+void claim_only(){
+  display.setTextSize(1);
+  display.setCursor(0, 20);
+  display.print("You can only press \n button B \n to claim your credit");
+  display.display();
   delay(2000);
-  
+  display.clearDisplay();
 }
 
 void setup(){
@@ -430,10 +448,24 @@ void loop() {
     debouncerA.update();
     debouncerB.update();
     if(state == 0){
-      if (debouncerA.fell()) { 
-        state = 15;
-        State.state = 15;
-        Serial.println(state);
+      if(Percent_Tsh.plastic == 100 || Percent_Tsh.metal == 100){
+        if (debouncerB.fell()) { 
+          state = 7;
+          State.state = 7;
+          esp_err_t result = esp_now_send(NunAddress, (uint8_t *) &State, sizeof(State));
+          if (result == ESP_OK) {
+            Serial.println("Sent to Nun with success");
+          } else {
+            Serial.println("Error sending the data");
+          }
+          Serial.println(state);
+        }
+      }else {
+        if (debouncerA.fell()) { 
+          state = 15;
+          State.state = 15;
+          Serial.println(state);
+        }
       }
     }else if(state == 15){
       if (debouncerA.fell()) { 
@@ -469,9 +501,20 @@ void loop() {
         }
         Serial.println(state);
       }
-    }else if(state == 5 || state == 9){
-      delay(5000);
+    }else if(state == 9 || state == 10){
+      delay(10000);
       state = 0;
+    }else if(state == 5){
+      delay(10000);
+      state = 14;
+      State.state = 14; 
+      esp_err_t result = esp_now_send(ViewAddress, (uint8_t *) &State, sizeof(State));
+        if (result == ESP_OK) {
+          Serial.println("Sent to View with success");
+        } else {
+          Serial.println("Error sending the data");
+        }
+        Serial.println(state);
     }else if(state == 11){
       delay(5000);
       state = 14;
@@ -483,42 +526,58 @@ void loop() {
           Serial.println("Error sending the data");
         }
         Serial.println(state);
+    }else if(state == 16){
+      delay(5000);
+      state = 3; //ส่งข้อมูลจบการทำงาน
+      State.state = 3;
+      esp_err_t result = esp_now_send(PatAddress, (uint8_t *) &State, sizeof(State));
+      if (result == ESP_OK) {
+        Serial.println("Sent to Pat with success");
+      } else {
+        Serial.println("Error sending the data");
+      }
+      Serial.println(state);
     }
   }
 }
 
 
 void Oled_Task (void *param){
-  //show_claim_debt();
-  //collect_debt();
-  //Thank_you();
   while(1){
     if(state == 0){
-      intro();
-      trash_quantity();
+      if(Percent_Tsh.plastic == 100 || Percent_Tsh.metal == 100){
+        claim_only();
+        trash_quantity();
+      }else {
+        intro();
+        trash_quantity();
+      }
     }else if (state == 1 || state == 2 || state == 3){
       trash_status();
     } else if(state == 4){
       cost(); //แสดงผลจำนวนเงินที่จะได้
     }else if(state == 5){
-      show_claim_debt();
+      show_debt();//delay(5000)
+      Thank_you();//delay(5000)
     }else if(state == 6){ 
       collect_debt(); //แสดงผลรับเบอร์
     } else if(state == 7){
       claim();
     } else if (state == 8){
-      show_debt();
+      show_claim_debt();
     }else if(state == 9){
-      not_enough_coin(); //แสดงผลว่าเงินไม่พอ
-      Thank_you();
+      not_enough_coin(); //แสดงผลว่าเงินไม่พอ -> delay(5000)
+      Thank_you();//delay(5000)
     } else if (state == 10){
-      show_debt();
-      delay(5000);
+      show_debt();//delay(5000);
+      Thank_you();//delay(5000)
     } else if(state == 11){
-      Thank_you(); //show thank you
+      Thank_you(); //show thank you -> delay(5000)
     } else if(state == 15){
       choose();
-    } 
+    } else if(state == 16){
+      trash_quantity();
+    }
   }
 }
 
